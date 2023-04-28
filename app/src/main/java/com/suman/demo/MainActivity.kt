@@ -3,14 +3,16 @@ package com.suman.demo
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
-import android.content.Context.CONNECTIVITY_SERVICE
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -22,7 +24,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.ContextCompat.startActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.suman.demo.databinding.ActivityMainBinding
@@ -30,6 +31,7 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
     //private var webView: WebView? = null
@@ -43,6 +45,9 @@ class MainActivity : AppCompatActivity() {
     private var mCameraPhotoPath: String? = null
     private val url = "https://green.tangerangkota.go.id/tps3rdroid/"
     //endregion
+
+    private val REQUEST_ENABLE_GPS = 1001
+    private val REQUEST_LOCATION_PERMISSION = 1002
 
     private var progressDialog: ProgressDialog? = null
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
@@ -295,6 +300,33 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Check if GPS is enabled
+        //still buggy if user go to setting and not enable the gps the webview still show up
+        if (!checkGpsEnabled()) {
+            // GPS is not enabled
+            // Show the location settings dialog
+            val alertDialog = AlertDialog.Builder(this@MainActivity)
+            alertDialog.setTitle("Enable Location")
+            alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?")
+            alertDialog.setPositiveButton(
+                "Settings"
+            ) { dialog, which ->
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+            }
+            alertDialog.setCancelable(false)
+            alertDialog.show()
+        } else {
+           chekInternetConnect()
+        }
+
+    }
+
+    private fun checkGpsEnabled(): Boolean {
+
+        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
     }
 
     // try to do a thing if location is not granted
@@ -310,9 +342,9 @@ class MainActivity : AppCompatActivity() {
                 if (
                     grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     &&
-                    grantResults.isNotEmpty() && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED
                     &&
-                    grantResults.isNotEmpty() && grantResults[2] == PackageManager.PERMISSION_GRANTED
+                    grantResults[2] == PackageManager.PERMISSION_GRANTED
                 ) {
                     chekInternetConnect()
                     // Permission granted for all the required permissions, perform your actions here.
@@ -349,6 +381,17 @@ class MainActivity : AppCompatActivity() {
                                 1
                             )
                         }
+
+                        /* val alertDialog = AlertDialog.Builder(this@MainActivity)
+                         alertDialog.setTitle("Enable Location")
+                         alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?")
+                         alertDialog.setPositiveButton(
+                             "Settings"
+                         ) { dialog, which ->
+                             val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                             startActivity(intent)
+                         }
+                         alertDialog.show()*/
 
                     }
                     // Permission denied for ACCESS_FINE_LOCATION, perform your specific action here.
