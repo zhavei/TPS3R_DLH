@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DEMO</string>
+    <string name="app_baraction">Aplikasi TPS3R</string>
+    <string name="error_inet">ERROR!! silahkan chek internet anda</string>
+</resources>

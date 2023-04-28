@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.filechooser.file.MainActivity">
+
+   <!-- <item
+        android:id="@+id/myMenuOne"
+        android:icon="@drawable/ic_arrow_back_black_24dp"
+        android:title="Item"
+        app:showAsAction="always" />-->
+
+    <item
+        android:id="@+id/myMenuTwo"
+        android:icon="@drawable/ic_arrow_forward_black_24dp"
+        android:title="Item"
+        android:tooltipText="forward"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/myMenutree"
+        android:icon="@mipmap/ic_whatsapp_foreground"
+        android:title="laporan WhatsApp"
+        app:showAsAction="always"
+        />
+
+
+
+</menu>
