@@ -1,21 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".MainActivity2">
 
-    <WebView
-        android:id="@+id/webview_2"
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:background="@drawable/tps3r"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/open_permit"
+    <TextView
+        android:id="@+id/tv_splash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="show permission" />
+        android:text="Please Add a Permission"
+        android:textColor="#000000"
+        android:textSize="@dimen/_25sdp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/guideline1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/logoputih"
+        app:layout_constraintBottom_toTopOf="@+id/tv_splash"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/writeExternalStorageSwitch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_12sdp"
+        android:text="Write External Storage"
+        android:textSize="@dimen/_15sdp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/tv_splash"
+        app:layout_constraintStart_toStartOf="@+id/tv_splash"
+        app:layout_constraintTop_toBottomOf="@+id/guideline1" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/cameraSwitch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_12sdp"
+        android:text="Camera"
+        android:textSize="@dimen/_15sdp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/writeExternalStorageSwitch"
+        app:layout_constraintStart_toStartOf="@+id/writeExternalStorageSwitch"
+        app:layout_constraintTop_toBottomOf="@+id/writeExternalStorageSwitch" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/accessFineLocationSwitch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_12sdp"
+        android:text="Access Fine Location"
+        android:textSize="@dimen/_15sdp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/writeExternalStorageSwitch"
+        app:layout_constraintStart_toStartOf="@+id/cameraSwitch"
+        app:layout_constraintTop_toBottomOf="@+id/cameraSwitch" />
+
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        app:icon="@drawable/baseline_arrow_forward_ios_24"
+        app:layout_constraintEnd_toEndOf="@+id/writeExternalStorageSwitch"
+        app:layout_constraintStart_toStartOf="@+id/writeExternalStorageSwitch"
+        app:layout_constraintTop_toBottomOf="@+id/accessFineLocationSwitch" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="164dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

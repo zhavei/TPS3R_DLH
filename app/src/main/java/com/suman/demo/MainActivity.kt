@@ -2,11 +2,12 @@ package com.suman.demo
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.Uri
@@ -23,8 +24,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.suman.demo.databinding.ActivityMainBinding
 import java.io.File
@@ -33,24 +32,19 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), LocationListener {
     //private var webView: WebView? = null
     //region global variables
-    private val mCM: String? = null
-    private val mUM: ValueCallback<Uri>? = null
-    private val mUMA: ValueCallback<Array<Uri>>? = null
     private var mUploadMessage: ValueCallback<Uri?>? = null
     private var mCapturedImageURI: Uri? = null
     private var mFilePathCallback: ValueCallback<Array<Uri>>? = null
     private var mCameraPhotoPath: String? = null
     private val url = "https://green.tangerangkota.go.id/tps3rdroid/"
+
     //endregion
-
-    private val REQUEST_ENABLE_GPS = 1001
-    private val REQUEST_LOCATION_PERMISSION = 1002
-
-    private var progressDialog: ProgressDialog? = null
-    private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
+    // this region below is promptprovide me with a Kotlin code. The user has to enable the GPS feature for the entire activity lifeCycle
+    private lateinit var locationManager: LocationManager
+    private val LOCATION_REQUEST_CODE = 100
 
     private lateinit var binding: ActivityMainBinding
 
@@ -68,11 +62,27 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         val webView = binding.webviewSample
         val webError = binding.layoutError.nointernet
 
         val mSwipeRefreshLayout = binding.sweipeRefresh
 
+        //below is prompt  provide me with a Kotlin code. The user has to enable the GPS feature for the entire activity lifeCycle
+        //region check gps with location manager
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_REQUEST_CODE
+            )
+        }
+        //endregion
+
+        checkGpsStatus()
         //region build version
         if (Build.VERSION.SDK_INT >= 23 && (ContextCompat.checkSelfPermission(
                 this,
@@ -306,22 +316,28 @@ class MainActivity : AppCompatActivity() {
             // GPS is not enabled
             // Show the location settings dialog
             val alertDialog = AlertDialog.Builder(this@MainActivity)
-            alertDialog.setTitle("Enable Location")
-            alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?")
+            alertDialog.setTitle("Thank You for Enabling Location")
+            alertDialog.setMessage("If GPS is not enabled. Did you want to go to settings menu?")
             alertDialog.setPositiveButton(
-                "Settings"
+                "Yes"
             ) { dialog, which ->
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
             }
+            alertDialog.setNegativeButton(
+                "No"
+            ) { _, _ ->
+                chekInternetConnect()
+            }
             alertDialog.setCancelable(false)
             alertDialog.show()
         } else {
-           chekInternetConnect()
+            chekInternetConnect()
         }
 
     }
 
+    //check gps enable with location manager
     private fun checkGpsEnabled(): Boolean {
 
         val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
@@ -346,6 +362,7 @@ class MainActivity : AppCompatActivity() {
                     &&
                     grantResults[2] == PackageManager.PERMISSION_GRANTED
                 ) {
+                    onResume() // add this if gps is disabled when used the app
                     chekInternetConnect()
                     // Permission granted for all the required permissions, perform your actions here.
                     // For example, start the camera, access storage, or start location updates.
@@ -517,6 +534,69 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this@MainActivity, MainActivity2::class.java)
         startActivity(intent)
     }
+
+    //region check gps status
+    private fun checkGpsStatus() {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+        if (!isGpsEnabled) {
+            showGpsAlertDialog()
+        }
+    }
+
+    private fun showGpsAlertDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(this)
+        alertDialogBuilder.apply {
+            setMessage("GPS is disabled. Please enable GPS to continue.")
+            setCancelable(false)
+            setPositiveButton("Enable GPS") { _, _ ->
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+            }
+        }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkGpsStatus()
+
+        //region below is promptprovide me with a Kotlin code. The user has to enable the GPS feature for the entire activity lifeCycle
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                1000L,
+                30f,
+                this
+            )
+        }
+        //endregion
+    }
+
+
+    // this also //region below is promptprovide me with a Kotlin code. The user has to enable the GPS feature for the entire activity lifeCycle
+    override fun onPause() {
+        super.onPause()
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            locationManager.removeUpdates(this)
+        }
+    }
+
+
+    //this also //region below is promptprovide me with a Kotlin code. The user has to enable the GPS feature for the entire activity lifeCycle
+    override fun onLocationChanged(p0: Location) {
+        checkGpsStatus()
+    }
+
+    //end region
 
     private fun goForward() {
         if (binding.webviewSample.canGoForward()) {
