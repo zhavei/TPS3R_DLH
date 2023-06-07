@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
     private var mCapturedImageURI: Uri? = null
     private var mFilePathCallback: ValueCallback<Array<Uri>>? = null
     private var mCameraPhotoPath: String? = null
-    private val url = "https://green.tangerangkota.go.id/tps3rdroid/"
+    private val url = "https://green.tangerangkota.go.id/tps3rdroidv2"
 
     //endregion
     // this region below is promptprovide me with a Kotlin code. The user has to enable the GPS feature for the entire activity lifeCycle
